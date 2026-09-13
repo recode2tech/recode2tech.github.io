@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recode2Tech - Privacy-First Mobile Utility Applications</title>
+  <meta name="description" content="Recode2Tech develops fast, secure, and 100% offline mobile utility applications including PDF Image Converter and Watermark For You." />
+  <script>
+    /* Immediate theme check before render to prevent flash */
+    (function() {
+      const savedTheme = localStorage.getItem('r2t_theme');
+      const initialTheme = savedTheme || 'dark';
+      document.documentElement.setAttribute('data-theme', initialTheme);
+    })();
+  </script>
+  <style>
+    /* Default / Dark Theme */
+    :root, [data-theme="dark"] {
+      --bg: #090d16;
+      --card-bg: #101726;
+      --card-bg-gradient: linear-gradient(180deg, rgba(19, 29, 46, 0.75) 0%, rgba(13, 20, 34, 0.95) 100%);
+      --card-hover-bg: #152033;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary: #818cf8;
+      --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      --accent-watermark: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+      --border: #1e293b;
+      --border-hover: #334155;
+      --badge-bg: rgba(99, 102, 241, 0.2);
+      --badge-text: #a5b4fc;
+      --badge-watermark-bg: rgba(14, 165, 233, 0.2);
+      --badge-watermark-text: #7dd3fc;
+      --callout-bg: #0f172a;
+      --nav-bg: rgba(9, 13, 22, 0.85);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+      --shadow-hover: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 0 20px rgba(99, 102, 241, 0.15);
+      --shadow-hover-watermark: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 0 20px rgba(14, 165, 233, 0.15);
+    }
+
+    /* Light Theme */
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-bg-gradient: #ffffff;
+      --card-hover-bg: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --primary: #4f46e5;
+      --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      --accent-watermark: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      --border: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --badge-bg: #ede9fe;
+      --badge-text: #4f46e5;
+      --badge-watermark-bg: #e0f2fe;
+      --badge-watermark-text: #0369a1;
+      --callout-bg: #f1f5f9;
+      --nav-bg: rgba(248, 250, 252, 0.85);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 12px 30px -4px rgba(0, 0, 0, 0.12);
+      --shadow-hover-watermark: 0 12px 30px -4px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .top-nav {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--primary-gradient);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+    }
+
+    .nav-brand-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* Theme Switcher Toggle */
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0.45rem 0.95rem;
+      border-radius: 9999px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle-btn:active {
+      transform: translateY(0);
+    }
+
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 2.5rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Hero Header */
+    .hero {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .hero-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .hero h1 {
+      font-size: 2.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #818cf8 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.35rem 0.85rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--border);
+    }
+
+    /* App Cards Grid */
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .apps-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero h1 {
+        font-size: 2.1rem;
+      }
+      .wrapper {
+        padding: 2rem 1rem;
+      }
+    }
+
+    .app-card {
+      background: var(--card-bg);
+      background-image: var(--card-bg-gradient);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-card-pdf:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: #6366f1;
+    }
+
+    .app-card-watermark:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover-watermark);
+      border-color: #0ea5e9;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 1.25rem;
+    }
+
+    .app-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .app-icon-pdf {
+      background: var(--primary-gradient);
+    }
+
+    .app-icon-watermark {
+      background: var(--accent-watermark);
+    }
+
+    .app-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .app-badge {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .app-badge-pdf {
+      background-color: var(--badge-bg);
+      color: var(--badge-text);
+    }
+
+    .app-badge-watermark {
+      background-color: var(--badge-watermark-bg);
+      color: var(--badge-watermark-text);
+    }
+
+    .app-desc {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+
+    .card-actions {
+      border-top: 1px solid var(--border);
+      padding-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-portal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.925rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: #ffffff;
+    }
+
+    .btn-portal-pdf {
+      background: var(--primary-gradient);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-portal-pdf:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .btn-portal-watermark {
+      background: var(--accent-watermark);
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+    }
+
+    .btn-portal-watermark:hover {
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .legal-links {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      font-size: 0.825rem;
+    }
+
+    .legal-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .legal-links a:hover {
+      color: var(--text-primary);
+      text-decoration: underline;
+    }
+
+    /* Privacy Commitment Section */
+    .features-banner {
+      background: var(--card-bg);
+      background-image: var(--card-bg-gradient);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 3rem;
+    }
+
+    .features-banner h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .features-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .feature-item-icon {
+      font-size: 24px;
+      line-height: 1;
+      padding-top: 2px;
+    }
+
+    .feature-item-text h4 {
+      font-size: 0.975rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .feature-item-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background-color: var(--card-bg);
+    }
+
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      margin: 0 8px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Sticky Top Navigation -->
+  <header class="top-header">
+    <nav class="top-nav">
+      <div class="nav-brand">
+        <div class="nav-logo">R</div>
+        <span class="nav-brand-name">Recode2Tech</span>
+      </div>
+      <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle Theme">
+        <span id="theme-icon">☀️</span>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="wrapper">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-badge-tag">
+        <span class="hero-badge-dot"></span>
+        <span>Mobile Engineering &amp; Utility Apps</span>
+      </div>
+      <h1>Fast, Secure &amp; <span>100% Offline</span> Apps</h1>
+      <p>
+        Building lightweight, privacy-first mobile utilities designed to make your daily tasks effortless without compromising personal data.
+      </p>
+      <div class="hero-pills">
+        <div class="pill">🔒 100% Local Processing</div>
+        <div class="pill">🛡️ Zero Cloud Upload</div>
+        <div class="pill">⚡ Works Anywhere Offline</div>
+      </div>
+    </header>
+
+    <!-- Applications Section -->
+    <main>
+      <div class="section-title">Featured Mobile Applications</div>
+      <div class="apps-grid">
+        <!-- App 1: PDF Image Converter -->
+        <article class="app-card app-card-pdf">
+          <div>
+            <div class="card-top">
+              <div class="app-icon app-icon-pdf">📄</div>
+              <div class="app-header">
+                <h3>PDF Image Converter</h3>
+                <span class="app-badge app-badge-pdf">Mobile Utility</span>
+              </div>
+            </div>
+            <p class="app-desc">
+              Convert PDF pages to crisp JPG, PNG, and WebP images, extract photos, or merge your photo gallery into neat PDF documents. Entirely on your device with no upload required.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a href="pdf-image-converter/" class="btn-portal btn-portal-pdf">
+              <span>🚀</span> Explore PDF Image Converter
+            </a>
+            <div class="legal-links">
+              <a href="pdf-image-converter/privacy-policy/">Privacy Policy</a>
+              <span>&bull;</span>
+              <a href="pdf-image-converter/terms-conditions/">Terms &amp; Conditions</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- App 2: Watermark For You -->
+        <article class="app-card app-card-watermark">
+          <div>
+            <div class="card-top">
+              <div class="app-icon app-icon-watermark">💧</div>
+              <div class="app-header">
+                <h3>Watermark For You</h3>
+                <span class="app-badge app-badge-watermark">Photo &amp; Branding</span>
+              </div>
+            </div>
+            <p class="app-desc">
+              Protect and brand your photos with custom watermark logos, copyright stamps, signatures, and batch watermarking. Fast, pixel-perfect, and 100% private.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a href="watermark-app/" class="btn-portal btn-portal-watermark">
+              <span>💧</span> Explore Watermark For You
+            </a>
+            <div class="legal-links">
+              <a href="watermark-app/privacy-policy/">Privacy Policy</a>
+              <span>&bull;</span>
+              <a href="watermark-app/terms-conditions/">Terms &amp; Conditions</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Core Guarantees -->
+      <section class="features-banner">
+        <h2>Our Privacy &amp; Performance Commitments</h2>
+        <div class="features-row">
+          <div class="feature-item">
+            <div class="feature-item-icon">📱</div>
+            <div class="feature-item-text">
+              <h4>Local-First Architecture</h4>
+              <p>All photo and document processing runs directly in your device's memory. No remote servers ever see your files.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">🛡️</div>
+            <div class="feature-item-text">
+              <h4>You Own Your Content</h4>
+              <p>We claim zero ownership or copyright over your documents, images, or watermark graphics. Your data is 100% yours.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-item-icon">⚡</div>
+            <div class="feature-item-text">
+              <h4>Full Offline Freedom</h4>
+              <p>Enjoy core productivity anywhere, whether traveling, with low connectivity, or in airplane mode.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Global Footer -->
+  <footer>
+    <p>&copy; 2026 Recode2Tech. All rights reserved.</p>
+    <p style="margin-top: 0.5rem;">
+      <a href="mailto:r2t.support@gmail.com">Contact Support</a> &bull;
+      <a href="https://github.com/recode2tech" target="_blank" rel="noopener noreferrer">GitHub</a> &bull;
+      <a href="app-ads.txt">app-ads.txt</a>
+    </p>
+  </footer>
+
+  <script>
+    function updateThemeButton(theme) {
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        label.textContent = 'Light Mode';
+      } else {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark Mode';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('r2t_theme', next);
+      updateThemeButton(next);
+    }
+
+    // Initialize button state on DOM load
+    document.addEventListener('DOMContentLoaded', function() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      updateThemeButton(current);
+    });
+  </script>
+</body>
+</html>
